@@ -114,3 +114,10 @@ You do not need to introduce advanced statistical methods in this module.
 - How might this process change if the data were updated continuously?
 
 This discussion connects static anomaly detection to **continuous intelligence systems**, where observations arrive repeatedly over time and anomalies may signal changes in system behavior.
+
+## Optional (Advanced)
+
+If you would like to apply these skills to a real dataset instead of the provided example data, see suggested datasets:
+
+https://denisecase.github.io/pro-analytics-02/reference/datasets/cintel/
+
