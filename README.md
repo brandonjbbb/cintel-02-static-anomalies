@@ -32,7 +32,7 @@ the detection logic works.
 ## Data
 
 The example pipeline reads **pediatric clinic** age and height
-data from: `data/clinic_data_case.csv`.
+data from: `data/clinic_data_brandon.csv`.
 It creates reasonable thresholds and outputs
 **anomalies** (data outside the expected threshold).
 
@@ -97,7 +97,7 @@ open a machine terminal in your `Repos` folder:
 
 ```shell
 # Replace username with YOUR GitHub username.
-git clone https://github.com/username/cintel-02-static-anomalies
+git clone https://github.com/brandonjbbb/cintel-02-static-anomalies
 
 cd cintel-02-static-anomalies
 code .
