@@ -23,18 +23,18 @@ to get these projects running on your machine.
 - [Suggested Datasets](https://denisecase.github.io/pro-analytics-02/reference/datasets/cintel/)
 
 ## Custom Project
-
+I created a custom anomaly detection project based on the example static clinic pipeline. I modified the logic to improve validation and make the anomaly output easier to understand.
 ### Dataset
-(Describe the dataset you used.)
+I used a static clinic dataset containing patient age in years and height in inches. Each row represented one patient record, and the data was read from a CSV file.
 
 ### Signals
-(Describe the signals used and/or created)
+The main signals used were age_years and height_inches from the dataset. I also created derived signals such as age_group, average height for age, and height difference from the age-group average.
 
 ### Experiments
-(Describe your modification experiments)
+I tested modifications by adding validation checks for missing values and by expanding the anomaly rules beyond simple upper thresholds. I also added anomaly reasons so I could see exactly why each record was flagged.
 
 ### Results
-(Describe the results you observed)
+The modified pipeline ran successfully and generated an anomalies output file in the artifacts folder. The results were more informative because flagged rows included a reason and reflected both threshold issues and unusual height patterns by age.
 
 ### Interpretation
-(Describe what this means for your system - provide the business intelligence you gained)
+This means the system became more useful for identifying suspicious records instead of only catching obvious extreme values. The business intelligence gained is that adding validation and context-based rules improves data quality monitoring and makes anomaly results more actionable.

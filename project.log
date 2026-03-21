@@ -73,3 +73,33 @@
 2026-03-20 08:47:18 | INFO | P2 | Pipeline executed successfully!
 2026-03-20 08:47:18 | INFO | P2 | ========================
 2026-03-20 08:47:18 | INFO | P2 | END main()
+2026-03-20 21:42:23 | INFO | P2 | === RUN START ===
+2026-03-20 21:42:23 | INFO | P2 | project=CINTEL
+2026-03-20 21:42:23 | INFO | P2 | repo_dir=cintel-02-static-anomalies
+2026-03-20 21:42:23 | INFO | P2 | python=3.14.3
+2026-03-20 21:42:23 | INFO | P2 | os=Darwin 22.6.0
+2026-03-20 21:42:23 | INFO | P2 | shell=bash
+2026-03-20 21:42:23 | INFO | P2 | cwd=.
+2026-03-20 21:42:23 | INFO | P2 | github_actions=False
+2026-03-20 21:42:23 | INFO | P2 | ========================
+2026-03-20 21:42:23 | INFO | P2 | START main()
+2026-03-20 21:42:23 | INFO | P2 | ========================
+2026-03-20 21:42:23 | INFO | P2 | ROOT_DIR = .
+2026-03-20 21:42:23 | INFO | P2 | DATA_FILE = data/clinic_data_yourname.csv
+2026-03-20 21:42:23 | INFO | P2 | OUTPUT_FILE = artifacts/anomalies_yourname.csv
+2026-03-20 21:42:23 | INFO | P2 | ARTIFACTS_DIR = artifacts
+2026-03-20 21:42:23 | INFO | P2 | Loaded 24 patient records
+2026-03-20 21:42:23 | INFO | P2 | Checking for missing or invalid values...
+2026-03-20 21:42:23 | INFO | P2 | Missing age_years values: 0
+2026-03-20 21:42:23 | INFO | P2 | Missing height_inches values: 0
+2026-03-20 21:42:23 | INFO | P2 | Applying anomaly detection rules...
+2026-03-20 21:42:23 | INFO | P2 | MIN_AGE: 0.0
+2026-03-20 21:42:23 | INFO | P2 | MAX_AGE: 16.0
+2026-03-20 21:42:23 | INFO | P2 | MIN_HEIGHT: 0.0
+2026-03-20 21:42:23 | INFO | P2 | MAX_HEIGHT: 72.0
+2026-03-20 21:42:23 | INFO | P2 | Count of anomalies found: 24
+2026-03-20 21:42:24 | INFO | P2 | Wrote anomalies file: /Users/brandonj/Documents/Repos/cintel-02-static-anomalies/artifacts/anomalies_yourname.csv
+2026-03-20 21:42:24 | INFO | P2 | ========================
+2026-03-20 21:42:24 | INFO | P2 | Pipeline executed successfully!
+2026-03-20 21:42:24 | INFO | P2 | ========================
+2026-03-20 21:42:24 | INFO | P2 | END main()
