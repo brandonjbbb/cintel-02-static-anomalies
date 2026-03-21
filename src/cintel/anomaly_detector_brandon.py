@@ -1,42 +1,22 @@
 """
-anomaly_detector_brandon.py - Project script (example).
+anomaly_detector_yourname.py - Modified project script.
 
 Author: Brandon Jean-Baptiste
-Date: 2026-03-07
+Date: 2026-03-20
 
-Static Data
+Modification summary
+- Added validation for missing and negative values.
+- Changed anomaly logic to flag:
+    1) ages below 0 or above 16
+    2) heights below 0 or above 72
+    3) very unusual height-for-age values using age-group averages
+- Added an anomaly_reason column so results are easier to interpret.
 
-- Data is taken from a pediatric clinic's patient records.
-- The data is static, meaning it does not change over time and is not updated with new records.
-- The clinic works with children from birth to 16 years old.
-- Each row represents a patient visit with two key measurements:
-  - age_years: The patient's age in years.
-  - height_inches: The patient's height in inches.
-
-Purpose
-
-- Read the data from a CSV (comma-separated values) file.
-- Detect anomalies.
-- Log the pipeline process to assist with debugging and transparency.
-
-Paths (relative to repo root)
-
-    INPUT FILE: data/clinic_data_brandon.csv
-    OUTPUT FILE: artifacts/anomalies_brandon.csv
-
-Terminal command to run this file from the root project folder
+Run from repo root:
 
     uv run python -m cintel.anomaly_detector_brandon
-
-OBS:
-  Don't edit this file - it should remain a working example.
-  Use as much of this code as you can when creating your own pipeline script,
-  and change the logic to detect anomalies and define thresholds as needed for your project.
 """
 
-# === DECLARE IMPORTS (packages we will use in this project) ===
-
-# First from the Python standard library (no installation needed)
 import logging
 from pathlib import Path
 from typing import Final
@@ -44,106 +24,99 @@ from typing import Final
 import polars as pl
 from datafun_toolkit.logger import get_logger, log_header, log_path
 
-# === CONFIGURE LOGGER ===
-
 LOG: logging.Logger = get_logger("P2", level="DEBUG")
-
-# === DECLARE GLOBAL CONSTANTS FOR FOLDER PATHS (directories) ===
 
 ROOT_DIR: Final[Path] = Path.cwd()
 DATA_DIR: Final[Path] = ROOT_DIR / "data"
 ARTIFACTS_DIR: Final[Path] = ROOT_DIR / "artifacts"
 
-# === DECLARE GLOBAL CONSTANTS FOR FILE PATHS ===
-
-DATA_FILE: Final[Path] = DATA_DIR / "clinic_data_brandon.csv"
-OUTPUT_FILE: Final[Path] = ARTIFACTS_DIR / "anomalies_brandon.csv"
-
-
-# === DEFINE THE MAIN FUNCTION ===
+DATA_FILE: Final[Path] = DATA_DIR / "clinic_data_yourname.csv"
+OUTPUT_FILE: Final[Path] = ARTIFACTS_DIR / "anomalies_yourname.csv"
 
 
 def main() -> None:
-    """Run the pipeline.
-
-    log_header() logs a standard run header.
-    log_path() logs repo-relative paths (privacy-safe).
-    """
+    """Run the modified anomaly detection pipeline."""
     log_header(LOG, "CINTEL")
 
     LOG.info("========================")
     LOG.info("START main()")
     LOG.info("========================")
 
-    # Log the constants to help with debugging and transparency.
     log_path(LOG, "ROOT_DIR", ROOT_DIR)
     log_path(LOG, "DATA_FILE", DATA_FILE)
     log_path(LOG, "OUTPUT_FILE", OUTPUT_FILE)
 
-    # Call the mkdir() method to ensure it exists
-    # The parents=True argument allows it to create any necessary parent directories.
-    # The exist_ok=True argument prevents an error if the directory already exists.
     ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
-
     log_path(LOG, "ARTIFACTS_DIR", ARTIFACTS_DIR)
 
-    # ----------------------------------------------------
-    # STEP 1: READ CSV DATA FILE INTO A POLARS DATAFRAME (TABLE)
-    # ----------------------------------------------------
-    # Polars is great for tabular data.
-    # We will use the polars package to
-    # read csv (comma-separated values) files
-    # into a two dimensional table (DataFrame).
-
-    # Call the polars library read_csv() method.
-    # Pass in (provide) the DATA_FILE path of the CSV file.
-    # Name the result "df" as is customary.
+    # STEP 1: READ DATA
     df: pl.DataFrame = pl.read_csv(DATA_FILE)
-
-    # Visually inspect the file in the data/ folder.
-    # It has columns named `age_years` and `height_inches`.
-    # The DataFrame height attribute returns the number of rows.
     LOG.info(f"Loaded {df.height} patient records")
 
-    # ----------------------------------------------------
-    # STEP 2: DEFINE THRESHOLDS AND DETECT ANOMALIES
-    # ----------------------------------------------------
-    # An anomaly is any value greater than the threshold we set.
-    # Domain rule for this example:
-    # Anything above this value is suspicious.
-    LOG.info("Studying children's ages and heights to find anomalies...")
+    # STEP 2: BASIC VALIDATION
+    LOG.info("Checking for missing or invalid values...")
 
-    # x is age in years, so 16 is the upper limit for kids
-    MAX_REASONABLE_X_VALUE: Final[float] = 16.0
+    missing_age = df.filter(pl.col("age_years").is_null()).height
+    missing_height = df.filter(pl.col("height_inches").is_null()).height
 
-    # y is height in inches, so maybe 6 feet (72 inches) is a reasonable upper limit
-    MAX_REASONABLE_Y_VALUE: Final[float] = 72.0
+    LOG.info(f"Missing age_years values: {missing_age}")
+    LOG.info(f"Missing height_inches values: {missing_height}")
 
-    LOG.info(f"MAX_REASONABLE_X_VALUE: {MAX_REASONABLE_X_VALUE} in years")
-    LOG.info(f"MAX_REASONABLE_Y_VALUE: {MAX_REASONABLE_Y_VALUE} in inches")
+    # Remove rows with nulls before analysis
+    df = df.drop_nulls(["age_years", "height_inches"])
 
-    # Create a new DataFrame named anomalies_df that contains
-    # only the rows where EITHER
-    # the age is TOO HIGH OR
-    # the height is TOO HIGH.
-    # A single pipe (|) is the OR operator in polars.
-    # We will use greater than or equal to (>=) to find values at or above the threshold.
-    anomalies_df: pl.DataFrame = df.filter(
-        (pl.col("age_years") >= MAX_REASONABLE_X_VALUE)
-        | (pl.col("height_inches") >= MAX_REASONABLE_Y_VALUE)
+    # STEP 3: DEFINE RULES
+    LOG.info("Applying anomaly detection rules...")
+
+    MIN_AGE: Final[float] = 0.0
+    MAX_AGE: Final[float] = 16.0
+    MIN_HEIGHT: Final[float] = 0.0
+    MAX_HEIGHT: Final[float] = 72.0
+
+    LOG.info(f"MIN_AGE: {MIN_AGE}")
+    LOG.info(f"MAX_AGE: {MAX_AGE}")
+    LOG.info(f"MIN_HEIGHT: {MIN_HEIGHT}")
+    LOG.info(f"MAX_HEIGHT: {MAX_HEIGHT}")
+
+    # Create age groups to compare patients with similar ages
+    df = df.with_columns(
+        pl.col("age_years").floor().alias("age_group")
     )
+
+    # Compute average height for each age group
+    age_group_stats = df.group_by("age_group").agg(
+        pl.col("height_inches").mean().alias("avg_height_for_age")
+    )
+
+    # Join averages back to original data
+    df = df.join(age_group_stats, on="age_group", how="left")
+
+    # Add deviation from average
+    df = df.with_columns(
+        (pl.col("height_inches") - pl.col("avg_height_for_age")).abs().alias("height_diff_from_avg")
+    )
+
+    # Define anomaly reason
+    df = df.with_columns(
+        pl.when(pl.col("age_years") < MIN_AGE)
+        .then(pl.lit("age below 0"))
+        .when(pl.col("age_years") > MAX_AGE)
+        .then(pl.lit("age above 16"))
+        .when(pl.col("height_inches") < MIN_HEIGHT)
+        .then(pl.lit("height below 0"))
+        .when(pl.col("height_inches") > MAX_HEIGHT)
+        .then(pl.lit("height above 72 inches"))
+        .when(pl.col("height_diff_from_avg") >= 8)
+        .then(pl.lit("height unusually far from age-group average"))
+        .otherwise(pl.lit(None))
+        .alias("anomaly_reason")
+    )
+
+    anomalies_df = df.filter(pl.col("anomaly_reason").is_not_null())
 
     LOG.info(f"Count of anomalies found: {anomalies_df.height}")
 
-    # ----------------------------------------------------
-    # STEP 3: SAVE THE OUTPUT ANOMALIES AS EVIDENCE
-    # ----------------------------------------------------
-    # We call generated files "artifacts".
-    # They are important evidence of the work we did and the results we found.
-    # We will save the anomalies_df DataFrame as a CSV file in the artifacts/ folder
-
-    # Every Polars DataFrame has a write_csv() method that saves it as a CSV file.
-    # Just pass in the full Path to the file you want to create.
+    # STEP 4: SAVE OUTPUT
     anomalies_df.write_csv(OUTPUT_FILE)
     LOG.info(f"Wrote anomalies file: {OUTPUT_FILE}")
 
@@ -152,8 +125,6 @@ def main() -> None:
     LOG.info("========================")
     LOG.info("END main()")
 
-
-# === CONDITIONAL EXECUTION GUARD ===
 
 if __name__ == "__main__":
     main()

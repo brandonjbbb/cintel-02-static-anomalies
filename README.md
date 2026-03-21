@@ -36,9 +36,8 @@ data from: `data/clinic_data_brandon.csv`.
 It creates reasonable thresholds and outputs
 **anomalies** (data outside the expected threshold).
 
-You'll copy the Python file and make it your own (see docs/your-files.md),
-and perform a similar analysis on `data/clinic_data_yourname.csv`
-given **adult clinic** age and height data.
+I copied the example Python file and made my own modified version
+to analyze `data/clinic_data_yourname.csv`.
 
 ## Working Files
 
@@ -60,6 +59,33 @@ Follow the [step-by-step workflow guide](https://denisecase.github.io/pro-analyt
 4. Phase 4. **Modify**
 5. Phase 5. **Apply**
 
+## My Modification
+
+I created a modified anomaly detector based on the example pipeline.
+
+### What I changed
+
+- Added validation checks for missing values in `age_years` and `height_inches`
+- Expanded anomaly detection to flag:
+  - ages below 0 or above 16
+  - heights below 0 or above 72 inches
+  - heights that are unusually far from the average height for the same age group
+- Added an `anomaly_reason` column to explain why each record was flagged
+
+### Why I made the change
+
+I wanted the anomaly detector to be more informative and realistic.
+The original example only checked fixed upper thresholds.
+My updated version still checks thresholds, but also compares each patient's height
+to the average height of similar ages.
+
+### What I observed
+
+After running the modified pipeline, the project completed successfully
+and produced an anomalies output file in the `artifacts/` folder.
+The results were easier to interpret because each flagged row included
+a reason explaining why it was marked as an anomaly.
+
 ## Challenges
 
 Challenges are expected.
@@ -76,58 +102,3 @@ running on your machine, and running the example will print out:
 ========================
 Pipeline executed successfully!
 ========================
-```
-
-And a new file named `project.log` will appear in the project folder.
-
-## Command Reference
-
-The commands below are used in the workflow guide above.
-They are provided here for convenience.
-
-Follow the guide for the **full instructions**.
-
-<details>
-<summary>Show command reference</summary>
-
-### In a machine terminal (open in your `Repos` folder)
-
-After you get a copy of this repo in your own GitHub account,
-open a machine terminal in your `Repos` folder:
-
-```shell
-# Replace username with YOUR GitHub username.
-git clone https://github.com/brandonjbbb/cintel-02-static-anomalies
-
-cd cintel-02-static-anomalies
-code .
-```
-
-### In a VS Code terminal
-
-```shell
-uv self update
-uv python pin 3.14
-uv sync --extra dev --extra docs --upgrade
-
-uvx pre-commit install
-git add -A
-uvx pre-commit run --all-files
-
-uv run python -m cintel.anomaly_detector_case
-
-uv run ruff format .
-uv run ruff check . --fix
-uv run zensical build
-
-git add -A
-git commit -m "update"
-git push -u origin main
-```
-
-</details>
-
-## Notes
-
-- Use the **UP ARROW** and **DOWN ARROW** in the terminal to scroll through past commands.
-- Use `CTRL+f` to find (and replace) text within a file.
